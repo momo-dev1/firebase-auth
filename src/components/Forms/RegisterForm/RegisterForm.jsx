@@ -1,12 +1,10 @@
 import { useState } from "react";
 
-import { doc, setDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { db, auth } from "../../../firebase";
-
 import styles from "../Forms.module.css";
 
 import FormInput from "../FormInput/FormInput";
+
+import { useAuth } from "../../../authContext";
 
 import { useFormik } from "formik";
 import { object, string, date, ref } from "yup";
@@ -21,6 +19,8 @@ import {
 
 const RegisterForm = ({ onRegister, onLogin }) => {
   const [submit, setSubmit] = useState(false);
+
+  const { register, checkUser } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -81,7 +81,7 @@ const RegisterForm = ({ onRegister, onLogin }) => {
         setUserId(userId);
         setUserInStorage("users", users);
         onRegister();
-        registerWithFirebase({
+        register({
           username: values.username,
           email: values.email,
           password: values.password,
@@ -90,42 +90,6 @@ const RegisterForm = ({ onRegister, onLogin }) => {
       }
     },
   });
-
-  const checkUser = (username, email) => {
-    const users = getStorage("users");
-    const isIterateUsername = users.some((user) => user.username === username);
-    const isIterateEmail = users.some((user) => user.email === email);
-
-    return [isIterateUsername, isIterateEmail];
-  };
-
-  const registerWithFirebase = async ({
-    username,
-    email,
-    password,
-    birthday,
-  }) => {
-    console.log({ username, email, password });
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      updateProfile(auth.currentUser, {
-        displayName: username,
-      });
-      const user = userCredential.user;
-
-      await setDoc(doc(db, "users", user.uid), {
-        username,
-        email,
-        birthday,
-      });
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
 
   return (
     <Container
@@ -144,7 +108,7 @@ const RegisterForm = ({ onRegister, onLogin }) => {
           invalid={submit && formik.errors.username ? true : false}
           errMsg={formik.errors.username || ""}
           valid={submit && !formik.errors.username ? true : false}
-          successMsg="✅"
+          successMsg="done"
           {...formik.getFieldProps("username")}
         />
 
@@ -157,7 +121,7 @@ const RegisterForm = ({ onRegister, onLogin }) => {
           invalid={submit && formik.errors.email ? true : false}
           errMsg={formik.errors.email || ""}
           valid={submit && !formik.errors.email ? true : false}
-          successMsg="✅"
+          successMsg="done"
           {...formik.getFieldProps("email")}
         />
 
@@ -171,7 +135,7 @@ const RegisterForm = ({ onRegister, onLogin }) => {
           invalid={submit && formik.errors.birthday ? true : false}
           errMsg={formik.errors.birthday || ""}
           valid={submit && !formik.errors.birthday ? true : false}
-          successMsg="✅"
+          successMsg="done"
           {...formik.getFieldProps("birthday")}
         />
 
@@ -185,7 +149,7 @@ const RegisterForm = ({ onRegister, onLogin }) => {
           invalid={submit && formik.errors.password ? true : false}
           errMsg={formik.errors.password || ""}
           valid={submit && !formik.errors.password ? true : false}
-          successMsg="✅"
+          successMsg="done"
           {...formik.getFieldProps("password")}
         />
 
@@ -199,7 +163,7 @@ const RegisterForm = ({ onRegister, onLogin }) => {
           invalid={submit && formik.errors.confirmPassword ? true : false}
           errMsg={formik.errors.confirmPassword || ""}
           valid={submit && !formik.errors.confirmPassword ? true : false}
-          successMsg="✅"
+          successMsg="done"
           {...formik.getFieldProps("confirmPassword")}
         />
 
