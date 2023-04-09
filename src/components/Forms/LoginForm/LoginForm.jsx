@@ -9,15 +9,13 @@ import { useFormik } from "formik";
 import { object, string } from "yup";
 
 import { getStorage, setUserId, updateStorage } from "../../../utils/storage";
-import { auth } from "../../../firebase";
-import {
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
+
+import { useAuth } from "../../../authContext";
 
 const LoginForm = ({ onRegister, onLogin }) => {
   const [submit, setSubmit] = useState(false);
+
+  const { signInWithGoogle } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -65,27 +63,6 @@ const LoginForm = ({ onRegister, onLogin }) => {
     updateStorage(users, myVerifyUser, true);
     setUserId(myVerifyUser.id);
     onLogin();
-  };
-
-  const signInWithFirebase = async ({ email, password }) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (err) {
-      console.log(err.message);
-    }
   };
 
   return (
