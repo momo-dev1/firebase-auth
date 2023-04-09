@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import React, { createContext, useEffect, useState } from "react";
 import { useContext } from "react";
@@ -90,13 +90,24 @@ export function AuthContextProvider({ children }) {
 
         return [isIterateUsername, isIterateEmail];
     };
+
+    const resetPassword = async (email) => {
+        try {
+            await sendPasswordResetEmail(auth, email);
+        } catch (err) {
+            console.log(err.message);
+        }
+
+    };
+
     const values = {
         logIn,
         register,
         logOut,
         signInWithGoogle,
         currentUser,
-        checkUser
+        checkUser,
+        resetPassword
     }
     return (
         <AuthContext.Provider value={values}>
