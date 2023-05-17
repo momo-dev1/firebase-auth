@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 import RegisterForm from './components/Forms/RegisterForm/RegisterForm'
-
+import Panel from './components/Panel/Panel';
 import LoginForm from './components/Forms/LoginForm/LoginForm';
 
 import { getStorage } from './utils/storage';
@@ -36,6 +36,7 @@ const App = () => {
     <>
       {toggle === 'register' && <RegisterForm onRegister={checkUserIsRegister} onLogin={changeToggle} />}
       {toggle === 'login' && <LoginForm onRegister={changeToggle} onLogin={checkUserIsRegister} />}
+      {toggle === 'panel' && <Panel onLogOut={checkUserIsRegister} />}
     </>
   )
 }
